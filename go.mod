@@ -13,10 +13,13 @@ require (
 	github.com/gobuffalo/packr v1.30.1 // indirect
 	github.com/gocolly/colly v1.2.0
 	github.com/gocolly/colly/v2 v2.0.1 // indirect
+	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
 	github.com/golang/protobuf v1.3.3 // indirect
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible
 	github.com/rogpeppe/go-internal v1.5.2 // indirect
+	github.com/wcharczuk/go-chart v2.0.1+incompatible
+	golang.org/x/image v0.0.0-20200119044424-58c23975cae1 // indirect
 	golang.org/x/net v0.0.0-20200202094626-16171245cfb2 // indirect
 	google.golang.org/appengine v1.6.5 // indirect
 )
