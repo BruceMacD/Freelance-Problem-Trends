@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/gocolly/colly"
-	_ "github.com/mattn/go-sqlite3"
 )
 
 const freelancerURL string = "https://www.freelancer.com/jobs/"
@@ -17,8 +16,8 @@ const freelanceLinkID string = "JobSearchCard-ctas-btn btn btn-mini btn-success"
 
 // FreelanceCrawler that writes scraped information to specified file
 type FreelanceCrawler struct {
-	DB    *sql.DB
-	Debug bool
+	DB      *sql.DB
+	Verbose bool
 }
 
 func (crawler *FreelanceCrawler) savePost(post Posting) {
@@ -37,7 +36,7 @@ func (crawler *FreelanceCrawler) start(startPage int, endPage int) {
 		// all postings have a unique link
 		post.link = e.ChildAttr("a", "href")
 
-		if crawler.Debug {
+		if crawler.Verbose {
 			fmt.Println(post)
 		}
 
@@ -61,7 +60,7 @@ func (crawler *FreelanceCrawler) start(startPage int, endPage int) {
 	c.Wait()
 }
 
-// CrawlAndWrite crawls the Freelancer job postings from the given page and write the contents to the file
+// CrawlAndWrite crawls the Freelancer job postings from the given page and writes the contents to the file
 func (crawler *FreelanceCrawler) CrawlAndWrite(startPage int, endPage int) {
 	if startPage == 0 || endPage == 0 {
 		fmt.Printf("Start and/or end pages not set. Not crawling.\n")

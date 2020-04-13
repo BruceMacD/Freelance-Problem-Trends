@@ -6,14 +6,17 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/BruceMacD/Freelance-Problem-Trends/analyzer"
 	"github.com/BruceMacD/Freelance-Problem-Trends/crawler"
 	_ "github.com/mattn/go-sqlite3"
 )
 
 func main() {
-	doCrawl := flag.Bool("crawl", false, "indicates if results should be crawled from freelancer site")
+	crawl := flag.Bool("crawl", false, "indicates if results should be crawled from freelancer site")
 	startPage := flag.Int("startPage", 0, "the page to start crawling from")
 	endPage := flag.Int("endPage", 0, "the page to stop crawling at")
+	analyze := flag.Bool("analyze", false, "indicates if the data should be read into memory from the database")
+	verbose := flag.Bool("v", false, "verbose output for debugging")
 	flag.Parse()
 
 	database, err := sql.Open("sqlite3", "./freelancer.db")
@@ -22,9 +25,20 @@ func main() {
 		os.Exit(1)
 	}
 
-	if *doCrawl {
-		crawler := crawler.FreelanceCrawler{DB: database}
+	if *crawl {
+		crawler := crawler.FreelanceCrawler{DB: database, Verbose: *verbose}
 		crawler.CrawlAndWrite(*startPage, *endPage)
+	}
+
+	if *analyze {
+		analyzer := analyzer.Analyzer{DB: database, Verbose: *verbose}
+		fwbo := analyzer.GetFilteredWordsByOccurance()
+
+		if *verbose {
+			for i := 0; i < 1000; i++ {
+				fmt.Printf("\"%s\": %d,\n", fwbo[i].Value, fwbo[i].Occurances)
+			}
+		}
 	}
 
 	fmt.Printf("Program completed successfully.\n")
