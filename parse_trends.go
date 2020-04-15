@@ -33,16 +33,29 @@ func main() {
 
 	if *analyze {
 		analyzer := analyzer.Analyzer{DB: database, Verbose: *verbose}
-		wl := analyzer.GetFilteredWordsByOccurance()
 
-		if *verbose {
-			for i := 0; i < 1000; i++ {
-				fmt.Printf("\"%s\": %d,\n", wl[i].Value, wl[i].Occurances)
-			}
-		}
-
-		visualizer.DrawTopNOccuranceBarChart(wl, "Keywords by Occurance", "top_ten_occurance_bar", 10)
+		// what are employers looking for in their job candidates?
+		analyzeTopRequirements(analyzer)
+		analyzeTopSkills(analyzer)
+		// TODO: pie chart of types from IDs
+		// correlate ID type to title/desc words (heat map?)
 	}
 
 	fmt.Printf("Program completed successfully.\n")
+}
+
+func analyzeTopRequirements(a analyzer.Analyzer) {
+	wl := a.GetFilteredWordsByOccurance(analyzer.GetCommonWords())
+
+	if a.Verbose {
+		for i := 0; i < 1000; i++ {
+			fmt.Printf("\"%s\": %d,\n", wl[i].Value, wl[i].Occurances)
+		}
+	}
+
+	visualizer.DrawTopNOccuranceBarChart(wl, "Top Job Requirements", "top_requirements_bar", 10)
+}
+
+func analyzeTopSkills(a analyzer.Analyzer) {
+	a.GetAllSkillsFromDB()
 }

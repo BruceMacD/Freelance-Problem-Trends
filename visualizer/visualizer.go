@@ -19,8 +19,9 @@ func DrawTopNOccuranceBarChart(wl analyzer.WordList, title, file string, n int) 
 	}
 
 	bar := charts.NewBar()
-	bar.SetGlobalOptions(charts.TitleOpts{Title: title})
+	bar.SetGlobalOptions(charts.TitleOpts{Title: title}, charts.ToolboxOpts{Show: true})
 	bar.AddXAxis(nameItems).AddYAxis("", valItems)
+	bar.SetSeriesOptions(charts.LabelTextOpts{Show: true})
 
 	f, err := os.Create(file + ".html")
 	if err != nil {

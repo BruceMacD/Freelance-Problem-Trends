@@ -13,14 +13,9 @@ type Analyzer struct {
 	Verbose bool
 }
 
-// GetAllWordsByOccurance returns all words found by occurance
-func (a *Analyzer) GetAllWordsByOccurance() WordList {
-	return a.getWordsByOccurance(make(map[string]bool))
-}
-
 // GetFilteredWordsByOccurance returns a WordList of occurances, but removes common words that arent interesting (such as "the")
-func (a *Analyzer) GetFilteredWordsByOccurance() WordList {
-	return a.getWordsByOccurance(GetCommonWords())
+func (a *Analyzer) GetFilteredWordsByOccurance(f map[string]bool) WordList {
+	return a.getWordsByOccurance(f)
 }
 
 // GetWordsByOccurance returns words in database sorted by occurance
@@ -73,12 +68,35 @@ func (a *Analyzer) getAllWords() (wos []string) {
 
 func (a *Analyzer) getAllTitlesFromDB() (ts []string) {
 	var title string
-
 	rows, _ := a.DB.Query("SELECT title FROM postings")
 	for rows.Next() {
 		rows.Scan(&title)
 		ts = append(ts, title)
 	}
+	return
+}
+
+func (a *Analyzer) GetAllSkillsFromDB() (s []string) {
+	var ids []string
+	var id string
+
+	// read IDs into memory
+	rows, _ := a.DB.Query("SELECT id FROM postings")
+	for rows.Next() {
+		rows.Scan(&id)
+		ids = append(ids, id)
+	}
+
+	// parse skill from ID
+	for _, path := range ids {
+		split := strings.Split(path, "/")
+		if split != nil && split[0] == "projects" {
+			ids = append(ids, split[1])
+		}
+	}
+
+	fmt.Println(ids)
+
 	return
 }
 
