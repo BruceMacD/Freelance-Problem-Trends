@@ -1,34 +1,30 @@
 package visualizer
 
 import (
+	"log"
 	"os"
 
 	"github.com/BruceMacD/Freelance-Problem-Trends/analyzer"
-	"github.com/wcharczuk/go-chart"
-	"github.com/wcharczuk/go-chart/drawing"
+	"github.com/go-echarts/go-echarts/charts"
 )
 
 // DrawTopNOccuranceBarChart draws a bar chart of the top 10 values in a word list by occurances
 func DrawTopNOccuranceBarChart(wl analyzer.WordList, title, file string, n int) {
-	var items []chart.Value
+	var nameItems []string
+	var valItems []int
 
 	for i := 1; i <= n; i++ {
-		items = append(items, chart.Value{
-			Value: float64(wl[i].Occurances),
-			Label: wl[i].Value})
+		nameItems = append(nameItems, wl[i].Value)
+		valItems = append(valItems, wl[i].Occurances)
 	}
 
-	graph := chart.BarChart{
-		Title: title,
-		Background: chart.Style{
-			FillColor: drawing.ColorBlue,
-		},
-		Height:   512,
-		BarWidth: 60,
-		Bars:     items,
-	}
+	bar := charts.NewBar()
+	bar.SetGlobalOptions(charts.TitleOpts{Title: title})
+	bar.AddXAxis(nameItems).AddYAxis("", valItems)
 
-	f, _ := os.Create(title + ".png")
-	defer f.Close()
-	graph.Render(chart.PNG, f)
+	f, err := os.Create(file + ".html")
+	if err != nil {
+		log.Println(err)
+	}
+	bar.Render(f)
 }
