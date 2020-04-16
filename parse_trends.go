@@ -47,7 +47,7 @@ func main() {
 func analyzeTopRequirements(a analyzer.Analyzer) {
 	wl := a.GetFilteredWordsByOccurance(analyzer.GetCommonWords())
 
-	if a.Verbose {
+	if a.Verbose && len(wl) > 1000 {
 		for i := 0; i < 1000; i++ {
 			fmt.Printf("\"%s\": %d,\n", wl[i].Value, wl[i].Occurances)
 		}
@@ -57,5 +57,13 @@ func analyzeTopRequirements(a analyzer.Analyzer) {
 }
 
 func analyzeTopSkills(a analyzer.Analyzer) {
-	a.GetAllSkillsFromDB()
+	sl := a.GetSkillsByOccurance()
+
+	if a.Verbose && len(sl) > 10 {
+		for i := 0; i < 10; i++ {
+			fmt.Printf("\"%s\": %d,\n", sl[i].Value, sl[i].Occurances)
+		}
+	}
+
+	visualizer.DrawTopNOccuranceBarChart(sl, "Top Job Skills", "top_skills_bar", 10)
 }

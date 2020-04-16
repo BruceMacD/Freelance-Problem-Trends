@@ -15,11 +15,6 @@ type Analyzer struct {
 
 // GetFilteredWordsByOccurance returns a WordList of occurances, but removes common words that arent interesting (such as "the")
 func (a *Analyzer) GetFilteredWordsByOccurance(f map[string]bool) WordList {
-	return a.getWordsByOccurance(f)
-}
-
-// GetWordsByOccurance returns words in database sorted by occurance
-func (a *Analyzer) getWordsByOccurance(filter map[string]bool) WordList {
 	wos := a.getAllWords()
 	wbo := mapWordsByOccurance(wos)
 	if a.Verbose {
@@ -27,23 +22,22 @@ func (a *Analyzer) getWordsByOccurance(filter map[string]bool) WordList {
 	}
 
 	// remove filtered words from map
-	for rem := range filter {
+	for rem := range f {
 		delete(wbo, rem)
 	}
 
-	// convert the words by occurance map to a sorted list of Words by occurances
-	wl := make(WordList, len(wbo))
-	i := 0
-	for val, occ := range wbo {
-		wl[i] = Word{
-			Value:      val,
-			Occurances: occ,
-		}
-		i++
-	}
-	sort.Sort(sort.Reverse(wl))
+	return getSortedWordList(wbo)
+}
 
-	return wl
+// GetSkillsByOccurance parses skills from freelance postings and returns a sorted WordList by occurance
+func (a *Analyzer) GetSkillsByOccurance() WordList {
+	s := a.getAllSkillsFromDB()
+	so := mapWordsByOccurance(s)
+	if a.Verbose {
+		fmt.Printf("Number of unique skills from all postings: %d\n", len(so))
+	}
+
+	return getSortedWordList(so)
 }
 
 // converts the database into a slice of individual words
@@ -76,7 +70,7 @@ func (a *Analyzer) getAllTitlesFromDB() (ts []string) {
 	return
 }
 
-func (a *Analyzer) GetAllSkillsFromDB() (s []string) {
+func (a *Analyzer) getAllSkillsFromDB() (s []string) {
 	var ids []string
 	var id string
 
@@ -90,12 +84,11 @@ func (a *Analyzer) GetAllSkillsFromDB() (s []string) {
 	// parse skill from ID
 	for _, path := range ids {
 		split := strings.Split(path, "/")
-		if split != nil && split[0] == "projects" {
-			ids = append(ids, split[1])
+
+		if split != nil && len(split) > 3 && split[1] == "projects" {
+			s = append(s, split[2])
 		}
 	}
-
-	fmt.Println(ids)
 
 	return
 }
@@ -129,5 +122,19 @@ func mapWordsByOccurance(ws []string) (wcs map[string]int) {
 		numOcc := wcs[lw] + 1
 		wcs[lw] = numOcc
 	}
+	return
+}
+
+func getSortedWordList(wcs map[string]int) (wl WordList) {
+	wl = make(WordList, len(wcs))
+	i := 0
+	for val, occ := range wcs {
+		wl[i] = Word{
+			Value:      val,
+			Occurances: occ,
+		}
+		i++
+	}
+	sort.Sort(sort.Reverse(wl))
 	return
 }
