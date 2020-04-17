@@ -29,15 +29,20 @@ func (a *Analyzer) GetFilteredWordsByOccurance(f map[string]bool) WordList {
 	return getSortedWordList(wbo)
 }
 
-// GetSkillsByOccurance parses skills from freelance postings and returns a sorted WordList by occurance
-func (a *Analyzer) GetSkillsByOccurance() WordList {
-	s := a.getAllSkillsFromDB()
-	so := mapWordsByOccurance(s)
+// GetSortedSkillsByOccurance parses skills from freelance postings and returns a sorted WordList by occurance
+func (a *Analyzer) GetSortedSkillsByOccurance() WordList {
+	so := a.GetSkillsByOccurance()
 	if a.Verbose {
 		fmt.Printf("Number of unique skills from all postings: %d\n", len(so))
 	}
 
 	return getSortedWordList(so)
+}
+
+// GetSkillsByOccurance parses skills from freelance postings and returns a map of occurances
+func (a *Analyzer) GetSkillsByOccurance() map[string]int {
+	s := a.getAllSkillsFromDB()
+	return mapWordsByOccurance(s)
 }
 
 // converts the database into a slice of individual words

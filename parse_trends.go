@@ -36,9 +36,9 @@ func main() {
 
 		// what are employers looking for in their job candidates?
 		analyzeTopRequirements(analyzer)
-		analyzeTopSkills(analyzer)
-		// TODO: pie chart of types from IDs
-		// correlate ID type to title/desc words (heat map?)
+		analyzeTopTenSkills(analyzer)
+		analyzeAllTopSkills(analyzer)
+		// TODO: heat map skills to requirements
 	}
 
 	fmt.Printf("Program completed successfully.\n")
@@ -53,11 +53,11 @@ func analyzeTopRequirements(a analyzer.Analyzer) {
 		}
 	}
 
-	visualizer.DrawTopNOccuranceBarChart(wl, "Top Job Requirements", "top_requirements_bar", 10)
+	visualizer.DrawTopNOccuranceBarChart(wl, "Top Description Job Requirements", "top_requirements_bar", 10)
 }
 
-func analyzeTopSkills(a analyzer.Analyzer) {
-	sl := a.GetSkillsByOccurance()
+func analyzeTopTenSkills(a analyzer.Analyzer) {
+	sl := a.GetSortedSkillsByOccurance()
 
 	if a.Verbose && len(sl) > 10 {
 		for i := 0; i < 10; i++ {
@@ -66,4 +66,12 @@ func analyzeTopSkills(a analyzer.Analyzer) {
 	}
 
 	visualizer.DrawTopNOccuranceBarChart(sl, "Top Job Skills", "top_skills_bar", 10)
+}
+
+func analyzeAllTopSkills(a analyzer.Analyzer) {
+	sl := a.GetSkillsByOccurance()
+	if a.Verbose && len(sl) > 10 {
+		fmt.Printf("Total num skills: %d\n", len(sl))
+	}
+	visualizer.DrawWordCloud(sl, "All Job Skills", "all_skills_cloud")
 }
