@@ -1,0 +1,41 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Awesome go-echarts</title>
+    <script src="https://go-echarts.github.io/go-echarts-assets/assets/echarts.min.js"></script>
+    <link href="https://go-echarts.github.io/go-echarts-assets/assets/bulma.min.css" rel="stylesheet">
+</head>
+
+<body>
+<div class="select" style="margin-right:10px; margin-top:10px; position:fixed; right:10px;"></div>
+
+<div class="container">
+    <div class="item" id="hWZuuPMjRgqt"
+         style="width:900px;height:500px;"></div>
+</div>
+<script type="text/javascript">
+    "use strict";
+    let myChart_hWZuuPMjRgqt = echarts.init(document.getElementById('hWZuuPMjRgqt'), "white");
+    let option_hWZuuPMjRgqt = {
+        title: {"text":"Skill to Requirement Correlation",},
+        tooltip: {},
+        legend: {},
+        visualMap:[{"calculable":true,"max":10,"inRange":{"color":["#50a3ba","#eac736","#d94e5d"]}}],
+        xAxis: [{"type":"category","data":["12a","1a","2a","3a","4a","5a","6a","7a","8a","9a","10a","11a"],"splitArea":{"show":true,},"splitLine":{"show":false,}}],
+        yAxis: [{"type":"category","axisLabel":{"show":true},"data":["Saturday","Friday","Thursday","Wednesday","Tuesday","Monday","Sunday"],"splitArea":{"show":true,},"splitLine":{"show":false,}}],
+        series: [
+        {"name":"heatmap","type":"heatmap","data":[[0,0,5],[0,1,1],[0,2,0],[0,3,0],[0,4,0],[0,5,0]],"label":{"show":false},"emphasis":{"label":{"show":false},},"markLine":{"label":{"show":false}},"markPoint":{"label":{"show":false}},},
+        ],
+        color: ["#c23531","#2f4554","#61a0a8","#d48265","#91c7ae","#749f83","#ca8622","#bda29a","#6e7074","#546570","#c4ccd3"],
+    };
+    myChart_hWZuuPMjRgqt.setOption(option_hWZuuPMjRgqt);
+</script>
+
+<style>
+    .container {margin-top:30px; display: flex;justify-content: center;align-items: center;}
+    .item {margin: auto;}
+</style>
+</body>
+</html>

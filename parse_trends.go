@@ -38,6 +38,7 @@ func main() {
 		analyzeTopRequirements(analyzer)
 		analyzeTopTenSkills(analyzer)
 		analyzeAllTopSkills(analyzer)
+		analyzeSkillRequirementCorrelation(analyzer)
 		// TODO: heat map skills to requirements
 	}
 
@@ -74,4 +75,9 @@ func analyzeAllTopSkills(a analyzer.Analyzer) {
 		fmt.Printf("Total num skills: %d\n", len(sl))
 	}
 	visualizer.DrawWordCloud(sl, "All Job Skills", "all_skills_cloud")
+}
+
+func analyzeSkillRequirementCorrelation(a analyzer.Analyzer) {
+	// TODO: get data
+	visualizer.DrawHeatMap(nil, "Skill to Requirement Correlation", "correlation_heatmap")
 }
