@@ -13,7 +13,7 @@ func DrawTopNOccuranceBarChart(wl analyzer.WordList, title, file string, n int) 
 	var nameItems []string
 	var valItems []int
 
-	for i := 1; i <= n; i++ {
+	for i := 0; i < n; i++ {
 		nameItems = append(nameItems, wl[i].Value)
 		valItems = append(valItems, wl[i].Occurances)
 	}
