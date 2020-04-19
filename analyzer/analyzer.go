@@ -2,7 +2,9 @@ package analyzer
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
+	"log"
 	"sort"
 	"strings"
 )
@@ -45,6 +47,48 @@ func (a *Analyzer) GetSkillsByOccurance() map[string]int {
 	return mapWordsByOccurance(s)
 }
 
+// GetSkillsByRequirements matches which top reqiurements are related to which top skills
+func (a *Analyzer) GetSkillsByRequirements() (skills, requirements []string, hmd [][3]interface{}, max int, e error) {
+	s := a.GetSortedSkillsByOccurance()
+	r := a.GetFilteredWordsByOccurance(GetCommonWords())
+
+	if len(s) < 10 || len(r) < 10 {
+		e = errors.New("There isn't enough data to analyze skill requirements")
+		return nil, nil, nil, 0, e
+	}
+
+	// get 10 skills from s
+	// get 10 requirements from r
+	for i := 0; i < 10; i++ {
+		skills = append(skills, s[i].Value)
+		requirements = append(requirements, r[i].Value)
+	}
+	// for each skill description count how many occurance of requirement
+	// this could be faster, but meh
+	// {skill_index, req_index, value}
+	// first skill/req = 0-9
+	// second skill/req = 10-11
+	// ..etc
+	hmd = make([][3]interface{}, 0)
+	for i, skill := range skills {
+		desc := a.getDescriptionsForSkillFromDB(skill)
+		for j, req := range requirements {
+			cnt := 0
+			for _, d := range desc {
+				if strings.Contains(d, req) {
+					cnt++
+				}
+			}
+			hmd = append(hmd, [3]interface{}{i, j, cnt})
+			if cnt > max {
+				max = cnt
+			}
+		}
+	}
+
+	return skills, requirements, hmd, max, nil
+}
+
 // converts the database into a slice of individual words
 func (a *Analyzer) getAllWords() (wos []string) {
 	ts := a.getAllTitlesFromDB()
@@ -67,7 +111,11 @@ func (a *Analyzer) getAllWords() (wos []string) {
 
 func (a *Analyzer) getAllTitlesFromDB() (ts []string) {
 	var title string
-	rows, _ := a.DB.Query("SELECT title FROM postings")
+	rows, err := a.DB.Query("SELECT title FROM postings")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
 	for rows.Next() {
 		rows.Scan(&title)
 		ts = append(ts, title)
@@ -80,7 +128,12 @@ func (a *Analyzer) getAllSkillsFromDB() (s []string) {
 	var id string
 
 	// read IDs into memory
-	rows, _ := a.DB.Query("SELECT id FROM postings")
+	rows, err := a.DB.Query("SELECT id FROM postings")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
 	for rows.Next() {
 		rows.Scan(&id)
 		ids = append(ids, id)
@@ -101,10 +154,36 @@ func (a *Analyzer) getAllSkillsFromDB() (s []string) {
 func (a *Analyzer) getAllDescriptionsFromDB() (ds []string) {
 	var desc string
 
-	rows, _ := a.DB.Query("SELECT description FROM postings")
+	rows, err := a.DB.Query("SELECT description FROM postings")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
 	for rows.Next() {
 		rows.Scan(&desc)
 		ds = append(ds, desc)
+	}
+	return
+}
+
+func (a *Analyzer) getDescriptionsForSkillFromDB(skill string) (ds []string) {
+	var desc string
+
+	rows, err := a.DB.Query("SELECT description FROM postings WHERE id LIKE ?", "%"+skill+"%")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		err := rows.Scan(&desc)
+		ds = append(ds, desc)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	err = rows.Err()
+	if err != nil {
+		log.Fatal(err)
 	}
 	return
 }

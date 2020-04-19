@@ -1,7 +1,6 @@
 package visualizer
 
 import (
-	"fmt"
 	"log"
 	"os"
 
@@ -49,24 +48,18 @@ func DrawWordCloud(msi map[string]int, title, file string) {
 }
 
 // DrawHeatMap visualizes correlations between some data against a key
-func DrawHeatMap(hmd [][3]interface{}, title, file string) {
-	// TODO: use hmd
-	fmt.Printf("not using hmd: %v", hmd)
-	// TODO: remove
-	var hours = [...]string{
-		"12a", "1a", "2a", "3a", "4a", "5a", "6a", "7a", "8a", "9a", "10a", "11a",
-	}
-	var days = [...]string{
-		"Saturday", "Friday", "Thursday", "Wednesday", "Tuesday", "Monday", "Sunday"}
-	testData := [][3]int{{0, 0, 5}, {0, 1, 1}, {0, 2, 0}, {0, 3, 0}, {0, 4, 0}, {0, 5, 0}}
-
+func DrawHeatMap(skills, requirements []string, hmd [][3]interface{}, max int, title, file string) {
 	hm := charts.NewHeatMap()
-	hm.SetGlobalOptions(charts.TitleOpts{Title: title})
-	hm.AddXAxis(hours).AddYAxis("heatmap", testData)
 	hm.SetGlobalOptions(
-		charts.YAxisOpts{Data: days, Type: "category", SplitArea: charts.SplitAreaOpts{Show: true}},
+		charts.TitleOpts{Title: title},
+		charts.ToolboxOpts{Show: true},
+		charts.InitOpts{Width: "1400px", Height: "600px"},
+	)
+	hm.AddXAxis(skills).AddYAxis("heatmap", hmd)
+	hm.SetGlobalOptions(
+		charts.YAxisOpts{Data: requirements, Type: "category", SplitArea: charts.SplitAreaOpts{Show: true}},
 		charts.XAxisOpts{Type: "category", SplitArea: charts.SplitAreaOpts{Show: true}},
-		charts.VisualMapOpts{Calculable: true, Max: 10, Min: 0,
+		charts.VisualMapOpts{Calculable: true, Max: float32(max), Min: 0,
 			InRange: charts.VMInRange{Color: []string{"#50a3ba", "#eac736", "#d94e5d"}}},
 	)
 

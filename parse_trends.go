@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"flag"
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/BruceMacD/Freelance-Problem-Trends/analyzer"
@@ -39,7 +40,6 @@ func main() {
 		analyzeTopTenSkills(analyzer)
 		analyzeAllTopSkills(analyzer)
 		analyzeSkillRequirementCorrelation(analyzer)
-		// TODO: heat map skills to requirements
 	}
 
 	fmt.Printf("Program completed successfully.\n")
@@ -79,5 +79,10 @@ func analyzeAllTopSkills(a analyzer.Analyzer) {
 
 func analyzeSkillRequirementCorrelation(a analyzer.Analyzer) {
 	// TODO: get data
-	visualizer.DrawHeatMap(nil, "Skill to Requirement Correlation", "correlation_heatmap")
+	// skills, reqs, hmd := a.GetSkillsByRequirements()
+	skills, requirements, hmd, max, err := a.GetSkillsByRequirements()
+	if err != nil {
+		log.Fatal(err)
+	}
+	visualizer.DrawHeatMap(skills, requirements, hmd, max, "Skill to Requirement Correlation", "correlation_heatmap")
 }
